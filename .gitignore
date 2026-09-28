@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+# build output
+dist/
+release/
+out/
+# package manager noise
+npm-debug.log*
+yarn-error.log
+# OS
+.DS_Store
+Thumbs.db
+# electron-builder temp
+*.icns
+# local temp downloads (electron zip staged by scripts/_dl.cjs)
+.tmp-e38.zip
+.tmp-e*.zip
+# generated smoke-test harness (created by scripts/smoke-electron.cjs)
+scripts/_smoke-harness.cjs

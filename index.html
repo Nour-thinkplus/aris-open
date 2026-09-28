@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:;">
+  <title>ARIS Open — Process Modeling Studio</title>
+  <link rel="icon" href="assets/icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ══════════════════ TOOLBAR ══════════════════ -->
+  <header id="toolbar">
+    <div class="tb-group">
+      <span id="brand" title="ARIS Open">
+        <span class="logo">◆</span> ARIS&nbsp;Open
+      </span>
+    </div>
+
+    <div class="tb-group">
+      <button id="btn-new"    title="New database (Ctrl+N)">New</button>
+      <button id="btn-open"   title="Open AML / AJOS file (Ctrl+O)">Open</button>
+      <button id="btn-save"   title="Save as… (Ctrl+S)">Save&nbsp;as…</button>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <button id="btn-undo"  title="Undo (Ctrl+Z)">↶ Undo</button>
+      <button id="btn-redo"  title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group" title="Click a palette object, then click the canvas — or press the key">
+      <button class="pal" data-add="OT_FUNC"      title="Add Function (F)">⬜ Function</button>
+      <button class="pal" data-add="OT_EVENT"     title="Add Event (E)">⬭ Event</button>
+      <button class="pal" data-add="OT_PROCESS"   title="Add Process">▤ Process</button>
+      <button class="pal" data-add="OT_ORGN_UNIT" title="Add Organization Unit">⌘ Org unit</button>
+      <button class="pal" data-add="OT_APP_SYS"   title="Add Application System">▣ App system</button>
+      <button class="pal" data-add="OT_BUSI_RULE" title="Add Business Rule">⬡ Busi. rule</button>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <button id="btn-connect" class="toggle" title="Connect mode (C): drag from one object to another">⇢ Connect</button>
+      <select id="cxn-type" class="inp" title="Connection type used by Connect mode">
+        <option value="CT_CONTROLS" selected>CT_CONTROLS (process flow)</option>
+        <option value="CT_IS_PRCSNT_SUPER">CT_IS_PRCSNT_SUPER (is superior)</option>
+        <option value="CT_IS_PRCSNT_SUBORD">CT_IS_PRCSNT_SUBORD (is subordinate)</option>
+        <option value="CT_IS_ORGN_UNIT">CT_IS_ORGN_UNIT (is org unit of)</option>
+        <option value="CT_IS_PERFORMED_BY">CT_IS_PERFORMED_BY (performed by)</option>
+        <option value="CT_IS_SUPPORTED_BY">CT_IS_SUPPORTED_BY (supported by)</option>
+        <option value="CT_IS_ACCESSIBLE">CT_IS_ACCESSIBLE (accessible)</option>
+        <option value="CT_IS_CONTROLS">CT_IS_CONTROLS (controls)</option>
+        <option value="CT_IS_REPLACED_BY">CT_IS_REPLACED_BY (replaced by)</option>
+      </select>
+      <button id="btn-deleteselection" title="Delete selected objects / connection (Del)">🗑</button>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <button id="btn-autolayout" title="Re-layout the current model left→right">⚑ Auto-layout</button>
+      <span class="zoomwrap">
+        <button id="btn-zoom-out" title="Zoom out (−)">−</button>
+        <span id="zoom-label" title="Zoom (0 to fit)">100%</span>
+        <button id="btn-zoom-in" title="Zoom in (+)">+</button>
+        <button id="btn-zoom-fit" title="Fit to content (0)">⤢ Fit</button>
+      </span>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <button id="btn-check" title="Run ARIS semantic rules (Shift+F7)">✓ Check</button>
+      <button id="btn-export-aml">⇩ AML&nbsp;XML</button>
+      <button id="btn-export-json">⇩ JSON</button>
+      <button id="btn-export-svg" title="Export current model as SVG">⇩ SVG</button>
+      <button id="btn-example" title="Load the demo EPC + org chart">✳ Example</button>
+    </div>
+  </header>
+
+  <!-- ══════════════════ WORK AREA ══════════════════ -->
+  <main id="workarea">
+
+    <!-- left ─ palette / models -->
+    <aside id="left-panel">
+      <section>
+        <h3>Model</h3>
+        <div class="modelrow">
+          <select id="model-select" class="inp" title="Active model"></select>
+          <select id="new-model-type" class="inp" title="Type for the new model (＋)" style="max-width:74px">
+            <option value="EPC" selected>EPC</option>
+            <option value="ORG">ORG</option>
+            <option value="BPMN">BPMN</option>
+            <option value="PROC">PROC</option>
+          </select>
+          <button id="btn-add-model" class="iconbtn" title="Add new model">＋</button>
+        </div>
+        <div id="model-meta" class="muted"></div>
+      </section>
+
+      <section>
+        <h3>Contents <span id="obj-count" class="pill">0</span></h3>
+        <ul id="obj-list"></ul>
+      </section>
+    </aside>
+
+    <!-- center ─ canvas -->
+    <section id="canvas-wrap">
+      <svg id="canvas"></svg>
+      <div id="canvas-hint" class="hint">
+        <b>ARIS Open</b> — pick an object on the toolbar, or <b>Open</b> an AML file.
+        Drag to move · scroll to zoom · double-click to rename · <b>C</b> connect · <b>Del</b> delete
+      </div>
+    </section>
+
+    <!-- right ─ properties / checks -->
+    <aside id="right-panel">
+      <div class="tabs">
+        <button id="tab-props" class="tab active" data-tab="props">Properties</button>
+        <button id="tab-checks" class="tab" data-tab="checks">
+          Checks <span id="check-badge" class="pill pill-empty">0</span>
+        </button>
+      </div>
+
+      <div id="pane-props" class="pane active">
+        <div id="props-empty" class="muted pad">Select an object to edit its properties.</div>
+        <div id="props-form" class="pad" style="display:none">
+          <label>Name <input id="prop-name" class="inp" type="text" autocomplete="off"></label>
+          <label>Type <input id="prop-type" class="inp" type="text" readonly></label>
+          <label>Description <textarea id="prop-descr" class="inp" rows="3" placeholder="AT_DESCR"></textarea></label>
+          <div class="posrow">
+            <label>X <input id="prop-x" class="inp" type="number" step="10"></label>
+            <label>Y <input id="prop-y" class="inp" type="number" step="10"></label>
+          </div>
+          <div id="props-extras"></div>
+          <button id="prop-delete" class="danger">Delete object</button>
+        </div>
+
+        <div id="edge-empty" class="muted pad" style="display:none">
+          Click a connection line to select it, then delete it.
+        </div>
+        <div id="edge-form" class="pad" style="display:none">
+          <h4>Connection</h4>
+          <label>Type <select id="edge-type" class="inp"></select></label>
+          <div id="edge-endpoints" class="muted"></div>
+          <button id="edge-delete" class="danger">Delete connection</button>
+        </div>
+      </div>
+
+      <div id="pane-checks" class="pane">
+        <div id="checks-summary" class="pad muted"></div>
+        <ul id="checks-list"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ══════════════════ STATUS BAR ══════════════════ -->
+  <footer id="statusbar">
+    <span id="st-file" class="muted">no file</span>
+    <span id="st-dirty" class="dot" title="unsaved changes"></span>
+    <span id="st-model" class="muted">—</span>
+    <span id="st-count" class="muted">0 obj · 0 conn</span>
+    <span id="st-mode" class="muted">mode: select</span>
+    <span id="st-hint" class="muted grow"></span>
+  </footer>
+
+  <!-- modal: about -->
+  <div id="about-modal" class="modal" hidden>
+    <div class="modal-card">
+      <h2><span class="logo">◆</span> ARIS Open</h2>
+      <p class="muted">Open-source process modeling &amp; governance studio.<br>
+         BPMN / EPC / Org / Hierarchy · semantic checks · ARIS AML import &amp; export.</p>
+      <p class="muted" id="about-versions"></p>
+      <p class="muted small">MIT License · <a id="about-repo" href="#">Source code</a></p>
+      <button id="about-close" class="primary">Close</button>
+    </div>
+  </div>
+
+  <input type="file" id="file-input" hidden accept=".aml,.xml,.ajos,.json">
+
+  <script type="module" src="./src/renderer.js"></script>
+</body>
+</html>

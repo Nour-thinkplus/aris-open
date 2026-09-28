@@ -1,0 +1,93 @@
+{
+  "name": "aris-open",
+  "productName": "ARIS Open",
+  "version": "0.1.0",
+  "description": "Open-source process modeling & governance studio (BPM/EPC/BPMN/Org/Hierarchy) with semantic checks and ARIS AML/XML import-export.",
+  "license": "MIT",
+  "main": "src/main.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "electron .",
+    "web": "node scripts/web-server.js",
+    "test": "node --test test/",
+    "smoke": "node scripts/smoke-electron.cjs",
+    "check": "npm test && npm run smoke",
+    "icons": "node scripts/generate-icons.js",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "author": "ARIS Open Contributors",
+  "devDependencies": {
+    "electron": "44.4.5",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "org.arisopen.studio",
+    "productName": "ARIS Open",
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "scripts/**/*",
+      "index.html",
+      "styles.css",
+      "README.md",
+      "LICENSE"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "assets/icon.png",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "linux": {
+      "category": "Office;Engineering;Development",
+      "icon": "assets/icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  },
+  "allowScripts": {
+    "electron-winstaller@5.4.0": true,
+    "electron@44.4.5": true
+  }
+}
